@@ -17,6 +17,16 @@ async function fetchTodos() {
     throw new Error("Error fetching todos");
 }
 
+async function fetchCompletedTodos() {
+    const result = await fetch("https://jsonplaceholder.typicode.com/todos?completed=true");
+
+    if (result.ok) {
+        return result.json() as Promise<Array<Todo>>;
+    }
+
+    throw new Error("Error fetching todos");
+}
+
 async function fetchTodo(id: string) {
     const result = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
 
@@ -39,8 +49,15 @@ export function useAllTodos() {
             result.forEach((v) => {
 
                 console.log(v);
-                qc.setQueryData(["todos", `${v.id}`], v)
+                qc.setQueryData(["todos", `${v.id}`], v);
+
+
+
             });
+
+            const completeTodos = result.filter((v) => v.completed);
+
+            qc.setQueryData(["todos", "list", { filter: "complete" }], completeTodos)
 
             return result;
         }
@@ -58,7 +75,20 @@ export function useSingleTodo(id: string) {
 }
 
 export function useCompleteTodos() {
-    throw new Error();
+
+    const qc = useQueryClient();
+    return useQuery({
+        queryKey: ["todos", "list", { filter: "complete" }],
+        staleTime: 5 * 60 * 1000,
+        queryFn: async () => {
+            const result = await fetchCompletedTodos();
+            result.forEach((v) => {
+                qc.setQueryData(["todos", `${v.id}`], v)
+            });
+
+            return result;
+        }
+    })
 }
 
 export function useInCompleteTodos() {
