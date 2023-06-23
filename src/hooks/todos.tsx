@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 export type Todo = {
     userId: number;
     id: number;
@@ -28,10 +28,21 @@ async function fetchTodo(id: string) {
 }
 
 export function useAllTodos() {
+
+    const qc = useQueryClient();
     return useQuery({
         queryKey: ["todos", "list"],
+        staleTime: 5 * 60 * 1000,
         queryFn: async () => {
-            return fetchTodos();
+            const result = await fetchTodos();
+
+            result.forEach((v) => {
+
+                console.log(v);
+                qc.setQueryData(["todos", `${v.id}`], v)
+            });
+
+            return result;
         }
     })
 }
@@ -39,6 +50,7 @@ export function useAllTodos() {
 export function useSingleTodo(id: string) {
     return useQuery({
         queryKey: ["todos", id],
+        staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             return fetchTodo(id);
         }
