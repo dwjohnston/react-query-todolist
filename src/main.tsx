@@ -8,10 +8,13 @@ import { TodoItem } from './components/TodoItem.tsx'
 import { TodoSingle } from './pages/TodoSingle.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TodoListComplete } from './pages/TodosComplete.tsx'
+import { TopBar } from './components/TopBar.tsx'
 const router = createBrowserRouter([
   {
     path: "/",
     element: <div>
+
+      <TopBar />
 
       <p>
         <Link to="todos-all"> All todos</Link>

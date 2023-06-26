@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export type Todo = {
     userId: number;
     id: number;
@@ -45,16 +45,10 @@ export function useAllTodos() {
         staleTime: 5 * 60 * 1000,
         queryFn: async () => {
             const result = await fetchTodos();
-
             result.forEach((v) => {
-
                 console.log(v);
                 qc.setQueryData(["todos", `${v.id}`], v);
-
-
-
             });
-
             const completeTodos = result.filter((v) => v.completed);
 
             qc.setQueryData(["todos", "list", { filter: "complete" }], completeTodos)
@@ -72,6 +66,29 @@ export function useSingleTodo(id: string) {
             return fetchTodo(id);
         }
     })
+}
+
+export function useAddCompletedTodo() {
+
+    const qc = useQueryClient();
+    return useMutation({
+        mutationKey: ["todos", "add"],
+        mutationFn: async () => {
+            qc.setQueriesData(["todos", "list", { filter: "complete" }], (oldData) => {
+                return [...oldData, {
+                    id: 999,
+                    userId: 1,
+                    title: "foo",
+                    completed: true
+                }]
+            })
+        },
+    })
+
+
+
+
+
 }
 
 export function useCompleteTodos() {
