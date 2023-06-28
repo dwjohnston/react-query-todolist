@@ -1,41 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-export type Todo = {
-    userId: number;
-    id: number;
-    title: string;
-    completed: boolean;
-}
+import { fetchCompletedTodos, fetchTodo, fetchTodos } from "../services/todoService";
 
-
-async function fetchTodos() {
-    const result = await fetch("https://jsonplaceholder.typicode.com/todos");
-
-    if (result.ok) {
-        return result.json() as Promise<Array<Todo>>;
-    }
-
-    throw new Error("Error fetching todos");
-}
-
-async function fetchCompletedTodos() {
-    const result = await fetch("https://jsonplaceholder.typicode.com/todos?completed=true");
-
-    if (result.ok) {
-        return result.json() as Promise<Array<Todo>>;
-    }
-
-    throw new Error("Error fetching todos");
-}
-
-async function fetchTodo(id: string) {
-    const result = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
-
-    if (result.ok) {
-        return result.json() as Promise<Todo>;
-    }
-
-    throw new Error("Error fetching todo");
-}
 
 export function useAllTodos() {
 
@@ -66,6 +31,30 @@ export function useSingleTodo(id: string) {
             return fetchTodo(id);
         }
     })
+}
+
+
+export function useDeleteTodo(id: string) {
+
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["todos", "delete", id],
+        mutationFn: (data: {}) => {
+
+            //Pretend that we have deleted the todo
+
+            qc.setQueriesData(["todos", "list"], (oldData) => {
+                return (oldData ?? []).filter((v) => `${v.id}` !== id);
+            })
+
+
+            qc.resetQueries(["todos", id]);
+
+            return null;
+
+        }
+    });
 }
 
 export function useAddCompletedTodo() {

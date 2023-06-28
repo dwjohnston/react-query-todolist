@@ -1,5 +1,5 @@
-import { TodoItem } from "../components/TodoItem";
-import { useAllTodos, useCompleteTodos } from "../hooks/todos"
+import { TodoItem } from "./components/TodoItem";
+import { useAllTodos, useCompleteTodos } from "../../hooks/rqHooks"
 
 export function TodoListComplete() {
 

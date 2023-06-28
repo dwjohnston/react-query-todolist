@@ -1,12 +1,16 @@
 import { useParams } from "react-router-dom";
-import { useAllTodos, useSingleTodo } from "../hooks/todos";
+import { useAllTodos, useDeleteTodo, useSingleTodo } from "../../hooks/rqHooks";
 
 export function TodoSingle() {
     const { todoId } = useParams<{ todoId: string }>();
 
+
+
     if (!todoId) {
         throw new Error("Id didn't exist")
     }
+
+    const deleteTodo = useDeleteTodo(todoId);
 
     const todoResult = useSingleTodo(todoId);
 
@@ -22,5 +26,7 @@ export function TodoSingle() {
         <h1>Single Todo</h1>
 
         {todoResult.data.title}
+
+        <button onClick={deleteTodo.mutate}>delete</button>
     </div>
 }

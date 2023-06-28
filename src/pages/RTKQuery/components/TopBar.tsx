@@ -1,9 +1,9 @@
-import { useAddCompletedTodo } from "../hooks/todos";
+import { } from "../../../hooks/rtkqHooks";
 
 export function TopBar() {
 
 
-    const addTodo = useAddCompletedTodo();
+    // const addTodo = useAddCompletedTodo();
 
     return <button onClick={() => addTodo.mutate()}>add todo</button>
 

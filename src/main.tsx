@@ -1,17 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import { Link, Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { TodoList } from './pages/TodosAll.tsx'
-import { TodoItem } from './components/TodoItem.tsx'
-import { TodoSingle } from './pages/TodoSingle.tsx'
+import { TodoList } from './pages/ReactQuery/TodosAll.tsx'
+import { TodoSingle } from './pages/ReactQuery/TodoSingle.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { TodoListComplete } from './pages/TodosComplete.tsx'
-import { TopBar } from './components/TopBar.tsx'
+import { TodoListComplete } from './pages/ReactQuery/TodosComplete.tsx'
+import { TopBar } from './pages/ReactQuery/components/TopBar.tsx'
+import { RTKQTodoSingle } from './pages/RTKQuery/TodoSingle.tsx'
+import { RTKQTodoList } from './pages/RTKQuery/TodosAll.tsx'
+import { RTKQTodoListComplete } from './pages/RTKQuery/TodosComplete.tsx'
+import { Provider } from 'react-redux'
+import { store } from './reduxStore.ts'
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/rq",
     element: <div>
 
       <TopBar />
@@ -48,11 +51,51 @@ const router = createBrowserRouter([
     ]
   },
 
+  {
+    path: "/rtkq",
+    element: <div>
+
+      <TopBar />
+
+      <p>
+        <Link to="todos-all"> All todos</Link>
+      </p>
+      <p>
+        <Link to="todos-complete"> Complete Todos</Link>
+
+      </p>
+      <hr />
+      <Outlet />
+    </div>,
+
+    children: [
+      {
+        path: "todos/:todoId",
+        element: <RTKQTodoSingle />,
+
+      },
+      {
+        path: "todos-all",
+        element: <RTKQTodoList />
+      },
+      {
+        path: "todos-complete",
+        element: <RTKQTodoListComplete />
+      },
+      {
+        path: "todos-incomplete",
+        element: <div>Hello world!</div>,
+      },
+    ]
+  },
+
 ]);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={new QueryClient()}>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
